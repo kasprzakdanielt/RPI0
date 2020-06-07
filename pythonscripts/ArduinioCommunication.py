@@ -1,3 +1,5 @@
+import re
+
 import serial
 
 
@@ -13,8 +15,14 @@ class ArduinoCommunication:
         if self.ser.in_waiting > 0:
             line = "-"
             try:
-                line = self.ser.read_all().splitlines().pop(-2).decode('UTF-8').rstrip()
+                line = self.ser.read_all().splitlines()
             except:
                 print("error")
-                self.read_serial()
             return line
+
+    def read_last_distance(self):
+        stack = self.read_serial()
+        pop = 0
+        while not stack.pop(pop).decode("UTF-8").startswith("Distance:"):
+            pop = pop - 1
+        return re.match(r'Distance: (?P<distance>\d*)', stack.pop(pop).decode("UTF-8")).group("distance")

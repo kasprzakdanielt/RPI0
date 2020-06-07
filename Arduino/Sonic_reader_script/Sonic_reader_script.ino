@@ -10,8 +10,7 @@ void setup() {
 }
  
 void loop() {  
-  Serial.print(measureDistance());
-  Serial.println(" cm");
+  Serial.println("Distance: " + String(measureDistance()));
 } 
  
 int measureDistance() {
@@ -26,5 +25,5 @@ int measureDistance() {
   timeOfTravel = pulseIn(echoPin, HIGH);
   distance = timeOfTravel / 58;
  
-  return "Distance: " + distance;
+  return distance;
 }

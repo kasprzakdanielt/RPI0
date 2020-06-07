@@ -56,7 +56,7 @@ def drawLCD():
     # draw.text((x, top), "Temperature:" + str(dhtReader.read_temperature()) + "*C", font=font, fill=255)
     # draw.text((x, top + 13), "Humidity:" + str(dhtReader.read_humidity()) + "%", font=font, fill=255)
     draw.text((x, top + 26), "CPUtemp:" + str(int(cputemp)) + "*C", font=font, fill=255)
-    draw.text((x, top + 39), "Distance:" + arduinoComm.read_serial(), font=font, fill=255)
+    draw.text((x, top + 39), "Distance:" + arduinoComm.read_last_distance()+"cm", font=font, fill=255)
     draw.text((x, top + 52), CPU.decode('utf-8'), font=font, fill=255)
     # Display image.
     disp.dim(True)
