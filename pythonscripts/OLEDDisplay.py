@@ -54,6 +54,8 @@ class OLEDDisplay(threading.Thread):
     def run(self):
         while True:
             try:
+                self.arduinoComm.sendToArduino(read_input)
+                recv_data = self.arduinoComm.read_serial()
                 self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
                 cmd = "top -bn1 | grep load | awk '{printf \"Load: \"$(NF-2)$(NF-1)}'"
                 CPU = subprocess.check_output(cmd, shell=True)
@@ -63,7 +65,7 @@ class OLEDDisplay(threading.Thread):
                 # draw.text((x, top), "Temperature:" + str(dhtReader.read_temperature()) + "*C", font=font, fill=255)
                 self.draw.text((self.x, self.top + 13), "input:" + str(read_input), font=self.font, fill=255)
                 self.draw.text((self.x, self.top + 26), "CPUtemp:" + str(int(cputemp)) + "*C", font=self.font, fill=255)
-                self.draw.text((self.x, self.top + 39), "Distance:" + self.arduinoComm.read_last_distance() + "cm",
+                self.draw.text((self.x, self.top + 39), "Distance:" + recv_data[0] + "cm",
                                font=self.font, fill=255)
                 self.draw.text((self.x, self.top + 52), CPU.decode('utf-8'), font=self.font, fill=255)
                 # Display image.
@@ -72,7 +74,7 @@ class OLEDDisplay(threading.Thread):
                 self.disp.display()
             except:
                 self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
-            time.sleep(1)
+                time.sleep(1)
 
 
 class readInput(threading.Thread):

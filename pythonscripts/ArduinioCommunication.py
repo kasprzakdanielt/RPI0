@@ -1,5 +1,3 @@
-import re
-
 import serial
 
 
@@ -7,22 +5,22 @@ class ArduinoCommunication:
     ser = ''
 
     def __init__(self):
-        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         self.ser.flush()
 
     def read_serial(self):
-        self.ser.flush()
+        x = b'd'
+        collected_data = ""
         if self.ser.in_waiting > 0:
-            line = "-"
-            try:
-                line = self.ser.read_all().splitlines()
-            except:
-                print("error")
-            return line
+            while x.decode() != "<":
+                x = self.ser.read()
+            x = self.ser.read()
+            while x.decode() != ">":
+                collected_data = collected_data + x.decode()
+                x = self.ser.read()
+        print(collected_data)
+        return collected_data.split(",")
 
-    def read_last_distance(self):
-        stack = self.read_serial()
-        pop = 0
-        while not stack.pop(pop).decode("UTF-8").startswith("Distance:"):
-            pop = pop - 1
-        return re.match(r'Distance: (?P<distance>\d*)', stack.pop(pop).decode("UTF-8")).group("distance")
+    def sendToArduino(self, sendStr):
+        self.ser.flush()
+        self.ser.write(("[" + str(sendStr) + "]").encode())
