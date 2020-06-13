@@ -1,11 +1,17 @@
+import threading
+import time
+
 import serial
 
 
-class ArduinoCommunication:
+class ArduinoCommunication(threading.Thread):
     ser = ''
+    sendStrold = ""
 
     def __init__(self):
-        self.ser = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        threading.Thread.__init__(self)
+        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
+        time.sleep(3)
         self.ser.flush()
 
     def read_serial(self):
@@ -18,9 +24,10 @@ class ArduinoCommunication:
             while x.decode() != ">":
                 collected_data = collected_data + x.decode()
                 x = self.ser.read()
-        print(collected_data)
         return collected_data.split(",")
 
     def sendToArduino(self, sendStr):
-        self.ser.flush()
-        self.ser.write(("[" + str(sendStr) + "]").encode())
+        if (self.sendStrold != sendStr):
+            self.ser.write(str.encode("[" + str(sendStr) + "]"))
+            self.ser.flush()
+        self.sendStrold = sendStr
