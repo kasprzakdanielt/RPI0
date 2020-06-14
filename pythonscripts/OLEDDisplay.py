@@ -41,14 +41,14 @@ class OLEDDisplay(threading.Thread):
         # Move left to right keeping track of the current x position for drawing shapes.
         self.x = 0
         self.font = ImageFont.truetype('/home/pi/pythonscripts/misc/VCR_OSD_MONO_1.001.ttf', 13)
-        self.arduinoComm = ArduinioCommunication.ArduinoCommunication()
+        # self.arduinoComm = ArduinioCommunication.ArduinoCommunication()
         self.disp.command(Adafruit_SSD1306.SSD1306_DISPLAYON)
 
     def run(self):
         while True:
             try:
-                self.arduinoComm.sendToArduino(read_input)
-                recv_data = self.arduinoComm.read_serial()
+                # self.arduinoComm.sendToArduino(read_input)
+                # recv_data = self.arduinoComm.read_serial()
                 self.draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
                 cmd = "top -bn1 | grep load | awk '{printf \"Load: \"$(NF-2)$(NF-1)}'"
                 CPU = subprocess.check_output(cmd, shell=True)
@@ -59,8 +59,8 @@ class OLEDDisplay(threading.Thread):
                 #                fill=255)
                 self.draw.text((self.x, self.top + 13), "input:" + str(read_input), font=self.font, fill=255)
                 self.draw.text((self.x, self.top + 26), "CPUtemp:" + str(int(cputemp)) + "*C", font=self.font, fill=255)
-                self.draw.text((self.x, self.top + 39), "Distance:" + recv_data[0] + "cm",
-                               font=self.font, fill=255)
+                # self.draw.text((self.x, self.top + 39), "Distance:" + recv_data[0] + "cm",
+                #                font=self.font, fill=255)
                 self.draw.text((self.x, self.top + 52), CPU.decode('utf-8'), font=self.font, fill=255)
                 self.disp.dim(True)
                 self.disp.image(self.image)
@@ -70,12 +70,12 @@ class OLEDDisplay(threading.Thread):
                 time.sleep(1)
 
 
-class readInput(threading.Thread):
-
-    def __init__(self):
-        threading.Thread.__init__(self)
-
-    def run(self):
-        global read_input
-        while True:
-            read_input = raw_input("Podaj cos: ")
+# class readInput(threading.Thread):
+#
+#     def __init__(self):
+#         threading.Thread.__init__(self)
+#
+#     def run(self):
+#         global read_input
+#         while True:
+#             read_input = raw_input("Podaj cos: ")

@@ -8,11 +8,13 @@ class ArduinoCommunication(threading.Thread):
     ser = ''
     sendStrold = ""
 
-    def __init__(self):
+    def __init__(self, queue):
         threading.Thread.__init__(self)
         self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
         time.sleep(3)
         self.ser.flush()
+        self.queue = queue
+        print("ArduinoCommunication has been initialized")
 
     def read_serial(self):
         x = b'd'
@@ -26,8 +28,12 @@ class ArduinoCommunication(threading.Thread):
                 x = self.ser.read()
         return collected_data.split(",")
 
-    def sendToArduino(self, sendStr):
-        if (self.sendStrold != sendStr):
-            self.ser.write(str.encode("[" + str(sendStr) + "]"))
-            self.ser.flush()
-        self.sendStrold = sendStr
+    def run(self):
+        while True:
+            if not self.queue.empty():
+                send_str = self.queue.get_nowait()
+                if self.sendStrold != send_str:
+                    self.ser.write(str.encode("[" + str(send_str) + "]"))
+                    self.ser.flush()
+                    self.sendStrold = send_str
+                    self.queue.task_done()
